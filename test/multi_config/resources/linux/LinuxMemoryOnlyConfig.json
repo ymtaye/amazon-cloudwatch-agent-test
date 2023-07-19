@@ -4,7 +4,7 @@
     "metrics_collected": {
       "mem": {
         "measurement": [
-          {"name":"used_percent", "rename": "memory"}
+          "mem_used_percent"
         ]
       }
     },
