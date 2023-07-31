@@ -12,14 +12,17 @@ import (
 
 	"github.com/aws/amazon-cloudwatch-agent-test/util/awsservice"
 	"github.com/aws/amazon-cloudwatch-agent-test/util/common"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
 )
 
 const (
-	configOutputPath = "C:\\ProgramData\\Amazon\\AmazonCloudWatchAgent\\config.json"
-	namespace        = "MultiConfigWindowsTest"
-	agentRuntime     = 2 * time.Minute
+	configOutputPath                = "C:\\ProgramData\\Amazon\\AmazonCloudWatchAgent\\config.json"
+	namespace                       = "MultiConfigWindowsTest"
+	agentRuntime                    = 2 * time.Minute
+	numberofWindowsAppendDimensions = 1
+)
+
+var (
+	expectedMetrics = []string{"% Committed Bytes In Use", "% InterruptTime", "% Disk Time"}
 )
 
 func Validate() error {
@@ -35,18 +38,9 @@ func Validate() error {
 		return err
 	}
 
-	// test for cloud watch metrics
-	ec2InstanceId := awsservice.GetInstanceId()
-	expectedDimensions := []types.DimensionFilter{
-		types.DimensionFilter{
-			Name:  aws.String("InstanceId"),
-			Value: aws.String(ec2InstanceId),
-		},
-	}
-
-	expectedMetrics := []string{"% Committed Bytes In Use", "% InterruptTime", "% Disk Time"}
+	dimensionFilter := awsservice.BuildDimensionFilterList(numberofWindowsAppendDimensions)
 	for _, expectedMetric := range expectedMetrics {
-		err = awsservice.ValidateMetric(expectedMetric, namespace, expectedDimensions)
+		err = awsservice.ValidateMetric(expectedMetric, namespace, dimensionFilter)
 	}
 	if err != nil {
 		log.Printf("CloudWatch Agent append config not working : %v", err)

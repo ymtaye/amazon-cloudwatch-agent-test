@@ -11,13 +11,16 @@ import (
 
 	"github.com/aws/amazon-cloudwatch-agent-test/util/awsservice"
 	"github.com/aws/amazon-cloudwatch-agent-test/util/common"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
 )
 
 const (
-	configOutputPath = "/opt/aws/amazon-cloudwatch-agent/bin/config.json"
-	namespace        = "MultiConfigTest"
+	configOutputPath              = "/opt/aws/amazon-cloudwatch-agent/bin/config.json"
+	namespace                     = "MultiConfigTest"
+	numberofLinuxAppendDimensions = 1
+)
+
+var (
+	expectedMetrics = []string{"mem_used_percent", "cpu_time_active_userdata", "disk_free"}
 )
 
 // Let the agent run for 2 minutes. This will give agent enough time to call server
@@ -34,17 +37,9 @@ func Validate() error {
 	common.StopAgent()
 
 	// test for cloud watch metrics
-	ec2InstanceId := awsservice.GetInstanceId()
-	expectedDimensions := []types.DimensionFilter{
-		types.DimensionFilter{
-			Name:  aws.String("InstanceId"),
-			Value: aws.String(ec2InstanceId),
-		},
-	}
-
-	expectedMetrics := []string{"mem_used_percent", "cpu_time_active_userdata", "disk_free"}
+	dimensionFilter := awsservice.BuildDimensionFilterList(numberofLinuxAppendDimensions)
 	for _, expectedMetric := range expectedMetrics {
-		err := awsservice.ValidateMetric(expectedMetric, namespace, expectedDimensions)
+		err := awsservice.ValidateMetric(expectedMetric, namespace, dimensionFilter)
 		if err != nil {
 			log.Printf("CloudWatch Agent append config not working : %v", err)
 			return err
