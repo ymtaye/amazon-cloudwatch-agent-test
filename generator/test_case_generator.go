@@ -65,6 +65,7 @@ var testTypeToTestConfig = map[string][]testConfig{
 		{testDir: "./test/collection_interval"},
 		{testDir: "./test/metric_dimension"},
 		{testDir: "./test/restart"},
+		{testDir: "./test/multi_config"},
 		{testDir: "./test/xray"},
 		{testDir: "./test/otlp"},
 		{
