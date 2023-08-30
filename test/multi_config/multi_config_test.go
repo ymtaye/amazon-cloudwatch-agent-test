@@ -18,7 +18,7 @@ func AppendConfigs(config []string, configOutputPath string) {
 		common.CopyFile(agentConfig, configOutputPath)
 
 		log.Printf(configOutputPath)
-		if index == 0 {
+		if index >= 0 {
 			common.StartAgent(configOutputPath, true, false)
 		} else {
 			common.StartAgentWithMultiConfig(configOutputPath, true, false)

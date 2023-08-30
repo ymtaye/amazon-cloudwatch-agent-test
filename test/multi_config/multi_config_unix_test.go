@@ -42,7 +42,7 @@ func Validate() error {
 		},
 	}
 
-	expectedMetrics := []string{"test", "cpu_time_active_userdata", "disk_free"}
+	expectedMetrics := []string{"mem_used_percent", "cpu_time_active_userdata", "disk_free"}
 	for _, expectedMetric := range expectedMetrics {
 		err := awsservice.ValidateMetric(expectedMetric, namespace, expectedDimensions)
 		if err != nil {
